@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.OrderMapper">
+
+    <insert id="createOrder">
+        INSERT INTO seckill_order(userid, goodId, orderId)
+        VALUES(100,100,100)
+    </insert>
+
+</mapper>

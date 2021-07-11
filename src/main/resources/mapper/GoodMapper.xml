@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.GoodMapper">
+
+    <select id="select" resultType="com.example.vo.GoodVo">
+        SELECT a.id,
+               a.seckill_price,
+               b.price as originalPrice,
+               a.seckill_price,
+               b.name,
+               a.start_date,
+               a.end_date
+        FROM seckill_goods a
+        LEFT JOIN goods b ON a.goodId = b.id;
+    </select>
+
+    <select id="findById" resultType="com.example.vo.GoodVo">
+        SELECT a.id,
+               a.seckill_price,
+               b.price as originalPrice,
+               a.seckill_price,
+               b.img,
+               a.inventory,
+               b.name,
+               a.start_date,
+               a.end_date
+        FROM seckill_goods a
+        LEFT JOIN goods b ON a.goodId = b.id
+    WHERE a.id = #{id}
+    </select>
+
+    <update id="reduceInventory">
+        UPDATE seckill_goods
+        SET inventory = inventory-1
+        WHERE id = #{id}
+    </update>
+
+
+</mapper>

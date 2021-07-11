@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.UserMapper">
+
+    <select id="select" resultType="com.example.entity.User" resultMap="BaseResultUserMap">
+        SELECT
+            u.id as userId,
+            u.username,
+            u.password,
+            r.id as roleId,
+            r.role,
+            p.id as permissionId,
+            p.permission
+        FROM user u
+                 LEFT JOIN userrole ur on u.id = ur.userid
+                 LEFT JOIN role r on ur.roleid = r.id
+                 LEFT JOIN rolepermission rp on rp.roleid = r.id
+                 LEFT JOIN permission p on p.id = rp.permissionid
+        WHERE
+             u.id = #{id}
+    </select>
+
+    <insert id="save">
+        INSERT  INTO user (username, password)
+        VALUES (#{username}, #{password})
+    </insert>
+
+   <update id="update">
+       update user
+           set username=#{username},role=#{role}
+       where id = #{userId}
+   </update>
+
+    <delete id="delete">
+        DELETE FROM user WHERE id = #{id}
+    </delete>
+
+    <resultMap id="BaseResultUserMap" type="com.example.entity.User" >
+        <id column="userId" property="id" jdbcType="INTEGER" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+        <result column="password"    property="password"    jdbcType="VARCHAR" />
+        <collection property="roles" javaType="java.util.Set" ofType="com.example.entity.Role">
+            <id column="roleId" property="id" />
+            <result column="role" property="role"/>
+        </collection>
+        <collection property="permissions" javaType="java.util.Set" ofType="com.example.entity.Permission">
+            <id column="permissionId" property="id" />
+            <result column="permission" property="permission"/>
+        </collection>
+    </resultMap>
+
+    <select id="findByName" parameterType="java.lang.String" resultMap="BaseResultUserMap">
+        SELECT
+            u.id as userId,
+            u.username,
+            u.password,
+            r.id as roleId,
+            r.role,
+            p.id as permissionId,
+            p.permission
+        FROM user u
+                 LEFT JOIN userrole ur on u.id = ur.userid
+                 LEFT JOIN role r on ur.roleid = r.id
+                 LEFT JOIN rolepermission rp on rp.roleid = r.id
+                 LEFT JOIN permission p on p.id = rp.permissionid
+        WHERE
+            u.username = #{username}
+
+    </select>
+
+</mapper>

@@ -1,0 +1,67 @@
+server:
+  port: 8088
+spring:
+  redis:
+    database: 0           # 数据库
+    host: 192.168.10.121       # Redis服务器
+    port: 6379            # Redis端口号
+    # password: foobared    # Redis服务器密码
+    timeout: 5000         # 超时时间（毫秒）
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+
+
+  security:
+    user:
+      name: admin
+      password: admin
+  datasource:
+    username: root
+    password: 12345678
+    #The password for the database Fl3Du9I8v8 has been reset.
+    #
+    #The new password is 3MlYR1Ke5R
+    #
+    #url: jdbc:mysql://remotemysql.com:3306/Fl3Du9I8v8?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/victor?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver
+  devtools:
+    restart:
+      enabled: false
+      additional-paths: src/main/java
+  thymeleaf:
+    enabled: true  #开启thymeleaf视图解析
+    encoding: utf-8  #编码
+    prefix: classpath:/templates/  #前缀
+    cache: false  #是否使用缓存
+    mode: HTML  #严格的HTML语法模式  #后缀名
+    suffix: .html
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+#showSql
+logging:
+  level:
+    com:
+      example:
+        mapper : debug
+    org:
+      springframework:
+        security: DEBUG
+
+
+application:
+  jwt:
+    secretKey: securesecuresecuresecuresecuresecuresecuresecuresecuresecuresecure
+    tokenPrefix: Bearer
+    tokenExpirationAfterDays: 10
+
