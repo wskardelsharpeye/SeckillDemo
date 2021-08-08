@@ -9,11 +9,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,10 +35,19 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
         this.jwtConfig = jwtConfig;
     }
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader(jwtConfig.getAuthorizationHeader());
 
+        //check sessionID, if exists, pass the filter
+        Authentication oauth2Authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if(oauth2Authentication != null) {
+//            filterChain.doFilter(request,response);
+//            return;
+//        }
+
+        //check jwt
         if(Strings.isNullOrEmpty(authorizationHeader) || !authorizationHeader.startsWith(jwtConfig.getTokenPrefix())) {
             filterChain.doFilter(request,response);
             return;
@@ -50,10 +62,13 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
 
         Claims body = claimsJws.getBody();
         String username = body.getSubject();
+        Set<SimpleGrantedAuthority> authoritySet = null;
 
-        List<Map<String, String>> authorities = (List<Map<String, String>>) body.get("authorities");
-        Set<SimpleGrantedAuthority> authoritySet = authorities.stream().map(authorty -> new SimpleGrantedAuthority(authorty.get("authority")))
-                .collect(Collectors.toSet());
+        List<String> authorities = (List<String>) body.get("authorities");
+        if(authorities != null) {
+           authoritySet = authorities.stream().map(authorty -> new SimpleGrantedAuthority(authorty))
+                    .collect(Collectors.toSet());
+        }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 username,

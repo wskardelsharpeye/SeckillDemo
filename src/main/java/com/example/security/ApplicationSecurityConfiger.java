@@ -2,6 +2,8 @@ package com.example.security;
 
 import com.example.auth.CustomUserDetailsService;
 import com.example.jwt.JwtConfig;
+import com.example.jwt.JwtTokenVerifier;
+import com.example.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,8 +11,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.crypto.SecretKey;
@@ -37,7 +41,7 @@ public class ApplicationSecurityConfiger extends WebSecurityConfigurerAdapter {
         this.jwtConfig = jwtConfig;
     }
 
-  @Override
+  /*@Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
@@ -60,24 +64,32 @@ public class ApplicationSecurityConfiger extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID", "remember-me")
                 .logoutSuccessUrl("/login");
-    }
+    }*/
 
-    /*@Override
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/redis/**","/api2/**","/auth/**", "/login", "/css/*", "/js/*").permitAll()
+                .antMatchers("/api/**").hasAnyRole(INSPECTOR.toString(), USER.toString())
+                //.antMatchers("/api/**").hasAuthority(USER_READ.toString())
+                .anyRequest()
+                .authenticated()
                 .and()
                 .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(),jwtConfig, secretKey))
                 .addFilterAfter(new JwtTokenVerifier(secretKey,jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers("/redis/**","/api2/**","/auth/**", "index", "/css/*", "/js/*").permitAll()
-                .antMatchers("/api/**").hasAnyRole(INSPECTOR.toString())
-                //.antMatchers("/api/**").hasAuthority(USER_READ.toString())
-                .anyRequest()
-                .authenticated();
-    }*/
+                .oauth2Login()
+                .defaultSuccessUrl("/auth/userLogined");
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/auth/sign");
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

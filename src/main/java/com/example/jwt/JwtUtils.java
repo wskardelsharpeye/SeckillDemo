@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -33,7 +34,15 @@ public class JwtUtils {
 
         CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
 
+        List<String> authoritiesSet = userPrincipal.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        Map<String, Object> rolesMap = new HashMap<>();
+        rolesMap.put("authorities", authoritiesSet);
+
         return Jwts.builder()
+                .setClaims(rolesMap)
                 .setSubject((userPrincipal.getUsername()))
                 .setIssuedAt(new Date())
                 .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(Integer.valueOf(jwtConfig.getTokenExpirationAfterDays()))))

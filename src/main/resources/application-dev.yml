@@ -23,9 +23,14 @@ spring:
         max-idle: 8
         min-idle: 0
   security:
-    user:
-      name: admin
-      password: admin
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: f9f4678780d0fa7e979b
+            clientSecret: 3c5f29143537ca2dd1254435e16ff180ee43d28a
+            scope:
+              - read:user
   datasource:
     username: root
     password: 12345678
@@ -48,11 +53,10 @@ spring:
     mode: HTML  #严格的HTML语法模式  #后缀名
     suffix: .html
 
-
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
-  configuration:
-    map-underscore-to-camel-case: true
+  config-location: classpath:/mybatis/mybatis-config.xml
+  type-aliases-package: com.example.entity
 
 #showSql
 logging:
@@ -64,10 +68,8 @@ logging:
       springframework:
         security: ERROR
 
-
 application:
   jwt:
     secretKey: securesecuresecuresecuresecuresecuresecuresecuresecuresecuresecure
     tokenPrefix: Bearer
     tokenExpirationAfterDays: 10
-

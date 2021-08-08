@@ -14,13 +14,13 @@ import java.text.ParseException;
 public class RedisController {
 
     @Autowired
-    private RedisTemplate<String, String> strRedisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
-    @Autowired
-    private RedisTemplate<String, Serializable> serializableRedisTemplate;
+//    @Autowired
+//    private RedisTemplate<String, Serializable> serializableRedisTemplate;
 
     @GetMapping("/foo")
     public String getFoo() throws ParseException {
-        return (String) strRedisTemplate.opsForValue().get("foo");
+        return (String) redisTemplate.opsForValue().get("foo");
     }
 }

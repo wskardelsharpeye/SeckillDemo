@@ -26,18 +26,23 @@ public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
 
+    @GetMapping("/userLogined")
+    @ResponseBody
+    public ResponseEntity getUserLogined() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok(principal);
+    }
+
     @PostMapping(value = "/signIn", produces = "application/json;charset=UTF-8")
     public ResponseEntity<?> signIn(@RequestBody LoginRequest loginRequest) {
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
-
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
 
         return ResponseEntity.ok(new JwtResponse(
                 jwt,
@@ -45,6 +50,8 @@ public class AuthController {
                 userDetails.getUserId()
                 ));
     }
+
+
 
 
 }

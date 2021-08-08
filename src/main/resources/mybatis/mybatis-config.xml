@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 引入 MyBatis 分页插件 -->
+    <plugins>
+        <plugin interceptor="com.example.utils.PagePlugin">
+            <!-- 数据库方言 -->
+            <property name="dialect" value="mysql" />
+            <!-- 拦截以 Page 结尾的所有方法 -->
+            <property name="pageSqlId" value=".*(Page)$" />
+            <!-- 拦截以 find 开头的所有方法
+            <property name="pageSqlId" value="^find.*" />-->
+            <!-- 分页对象信息对应的key值 -->
+            <property name="pageParam" value="pageInfo" />
+        </plugin>
+    </plugins>
+</configuration>
