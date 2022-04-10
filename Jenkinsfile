@@ -1,4 +1,4 @@
-https://github.com/wskardelsharpeye/SeckillDemo.gitpipeline {
+pipeline {
     agent any
 
     stages {
